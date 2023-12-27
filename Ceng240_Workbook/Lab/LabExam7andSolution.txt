@@ -1,0 +1,101 @@
+Assume that you are provided a CSV (comma-separated values) file where each line describes the accounting records of a list of companies. These records consist of values such as billing identifier, whether this record is an income or an expense, and the amount of money for this record:
+
+companyName,recID1:I:amount1,recID2:E:amount2, ...
+
+where I denotes an income, E an expense, and amount is the amount of money for that record. Here is an example for a company named CENG240:
+
+CENG240,2222:I:500,3456:E:100,4444:I:110,6666:E:300,7248:E:50,8888:I:400
+
+where we see that company CENG240 has 6 accounting records, 3 of them are income ($1010 in total), 3 of them are expense ($450 in total). Hence, the profit of the company is $560.
+
+Your Task
+
+You will write a function named accounting(filename) with the following specifications:
+- It takes a string as the filename of the CSV file as an argument.
+- Your function should find the total amount of incomes and expenses among all companies.
+- For each company, it should compute the total amount of profit from income and expense records and find the company having the maximum profit.
+- It should return a list in the form of: [totalIncomes, totalExpenses, maxProfitCompanyName]
+
+Hint:
+
+You can benefit from readline() and split() functions.
+Warnings:
+
+To get points your function must return a list of three elements including the totalIncomes, totalExpenses and maxProfitCompanyName in order.
+The elements of the return value have weights of 25%, 25% and 50% in the grading. That is, if you return the correct name, you will get the half of the points for each case. Similarly, you have the chance to get partial points for the rest of the elements. However, you should return exactly 3 elements in the correct order so that the evaluation can be correctly executed.
+Be aware that the number of companies and the number of records for each company are not known or fixed.
+Note that total income and expense values are integers and maxProfitCompanyName is a string.
+Do not call "input()" or "print()" functions anywhere in your code.
+Do not use global variables. In fact, do not leave any code outside of your function.
+No newline is included at the end of the file. That is, input files will not contain an empty line.
+Click here to use Python Emulator to debug your code.
+
+Sample I/O:
+
+Sample function call#1:
+accounting('sample.txt')
+
+Content of the file "sample.txt":  
+
+Company12,2222:I:500,3456:E:100,4444:I:110,6666:E:300
+Company_23,2222:E:200,3333:I:250,3423:E:400,6666:I:375
+Comp 54,1234:I:1000,666:E:250,7248:I:200
+
+Return value of call#1:
+[2435, 1250, 'Comp 54']
+
+Sample function call#2:  
+accounting('sample2.txt')
+
+Content of the file "sample2.txt":
+
+Tech72,1499:I:810,8735:E:400,6304:E:300,6299:I:1035,6130:E:735,7546:I:1470,9182:E:1100,7623:E:1145,9578:I:215,1890:I:710
+C6061,7401:E:955,4832:I:1010,8775:E:495,3198:I:280,5321:I:905,8053:E:1455,9205:E:460
+Comp_16,5969:I:1265,4398:I:220,5349:I:1090,8214:E:1355,2291:E:580,4348:E:850,4097:E:310,6585:I:120
+Corp86,4374:I:1070,6278:E:765,5221:E:195,8634:E:230,2944:E:1415,7016:I:940,6515:I:120
+Company_4992,2782:I:1175,7952:E:1410,6301:I:995,2864:E:350,5854:I:895,3306:I:1325,8309:I:365,5728:E:110,7142:E:710,3037:E:940
+Comp31,2333:I:1320,4040:E:1060,1120:E:565,8072:E:230,4813:E:70,5777:I:805,7127:I:1150,4010:I:785,6736:I:340,9940:I:635,3875:E:1230,7829:E:615,1272:E:170,7778:I:890
+Corp_81,6114:E:150,4705:E:895,9981:I:435,4016:E:225,2373:I:1095,5060:E:1435,3610:I:520,4251:I:1290,4069:E:1470,3175:E:1195,1272:I:465
+
+Return value of call#2:
+[25745, 25575, 'Comp31']
+
+
+'''
+Lab Exam 8 Solution
+'''
+
+def accounting(data):
+    list_max = []
+    total_inc = 0
+    total_exp = 0
+    with open(data) as fread:
+        for lineno, line in enumerate(fread):
+            records = line.split(',')
+            company = records[0].strip()
+            inc_sum = 0
+            exp_sum = 0
+            for i in range(1, len(records)):
+                rec = records[i].split(':')
+                if rec[1].strip() == 'I':
+                    inc_sum += int(rec[2].strip())
+                elif rec[1].strip() == 'E':
+                    exp_sum += int(rec[2].strip())
+                    
+
+            list_max.append([company, (inc_sum - exp_sum), inc_sum, exp_sum])
+            total_inc += inc_sum
+            total_exp += exp_sum
+
+    first_place_gain = 0
+    first_place = 0
+    first_place_inc = 0
+    first_place_exp = 0
+    for player in list_max:
+        if player[1] > first_place_gain:
+            first_place_gain = player[1]
+            first_place = player[0]
+            first_place_inc = player[2]
+            first_place_exp = player[3]
+    
+    return [total_inc, total_exp, first_place]
